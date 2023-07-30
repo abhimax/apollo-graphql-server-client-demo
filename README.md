@@ -11,8 +11,13 @@ This is a simple CRUD (Create, Read, Update, Delete) application built using Apo
 
 ## Technologies Used
 
-- **Server:** Apollo Server, Express, GraphQL
-- **Client:** React, Apollo Client, @apollo/client
+- **Server:**
+  - Apollo Server
+  - Express
+  - GraphQL
+- **Client:**
+  - React
+  - Apollo Client
 
 ## Getting Started
 
@@ -25,3 +30,25 @@ This is a simple CRUD (Create, Read, Update, Delete) application built using Apo
    ```bash
    npm install
    ```
+
+### Client
+
+1. Navigate to the `client` folder.
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Replace 'YOUR_GRAPHQL_SERVER_ENDPOINT' in client/src/App.js with the actual URL of your GraphQL server (e.g., http://localhost:4000/graphql).
+
+4. Run the client:
+   ```bash
+   npm run dev
+   ```
+   The client application should be running at http://localhost:3000.
+   ### Folder Structure
+
+- server: Contains the Apollo GraphQL Server code.
+- client: Contains the React Apollo Client code.
