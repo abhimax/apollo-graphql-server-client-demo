@@ -4,9 +4,8 @@ import viteLogo from "/vite.svg";
 import graphQLLogo from "./assets/graphQL.png";
 import apolloLogo from "./assets/apollo.png";
 import "./App.css";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 
-// Define a GraphQL query
 const GET_DATA = gql`
   query GetData {
     data {
@@ -17,9 +16,68 @@ const GET_DATA = gql`
   }
 `;
 
+const ADD_DATA = gql`
+  mutation AddData($name: String!, $description: String!) {
+    addData(name: $name, description: $description) {
+      id
+      name
+      description
+    }
+  }
+`;
+
+const UPDATE_DATA = gql`
+  mutation UpdateData($id: ID!, $name: String!, $description: String!) {
+    updateData(id: $id, name: $name, description: $description) {
+      id
+      name
+      description
+    }
+  }
+`;
+
+const DELETE_DATA = gql`
+  mutation DeleteData($id: ID!) {
+    deleteData(id: $id)
+  }
+`;
+
 function App() {
-  // Use the Apollo useQuery hook to fetch data
+  const [formData, setFormData] = useState({ name: "", description: "" });
   const { loading, error, data } = useQuery(GET_DATA);
+
+  const [addData] = useMutation(ADD_DATA, {
+    refetchQueries: [{ query: GET_DATA }],
+  });
+
+  const [updateData] = useMutation(UPDATE_DATA, {
+    refetchQueries: [{ query: GET_DATA }],
+  });
+
+  const [deleteData] = useMutation(DELETE_DATA, {
+    refetchQueries: [{ query: GET_DATA }],
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleAddData = () => {
+    addData({ variables: formData });
+    setFormData({ name: "", description: "" });
+  };
+
+  const handleUpdateData = (id) => {
+    const { name, description } = formData;
+    updateData({ variables: { id, name, description } });
+    setFormData({ name: "", description: "" });
+  };
+
+  const handleDeleteData = (id) => {
+    deleteData({ variables: { id } });
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
@@ -44,11 +102,50 @@ function App() {
         {/* <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </button> */}
+        <div>
+          <h3>Add New Item:</h3>
+          <input
+            type="text"
+            placeholder="Name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            placeholder="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+          />
+          <button onClick={handleAddData}>Add</button>
+        </div>
         <ul>
           {data.data.map((item) => (
             <li key={item.id}>
               <h3>{item.name}</h3>
               <p>{item.description}</p>
+              {/* Form to Update Item */}
+              <div>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                />
+                <button onClick={() => handleUpdateData(item.id)}>
+                  Update
+                </button>
+                <button onClick={() => handleDeleteData(item.id)}>
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
